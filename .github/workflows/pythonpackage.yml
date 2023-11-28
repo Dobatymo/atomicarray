@@ -1,0 +1,76 @@
+name: Python package
+
+on:
+  push:
+  pull_request:
+  release:
+    types:
+    - published
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-20.04, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Run tests
+      run: |
+        python -m pip install .[test]
+        cd tests && python -m unittest
+
+  build-wheels:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs: test
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.8
+    - name: Build
+      run: |
+        python -m pip install cibuildwheel==2.16.2
+        python -m cibuildwheel
+    - uses: actions/upload-artifact@v3
+      with:
+        path: wheelhouse/*.whl
+
+  build-sdist:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs: test
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.8
+    - name: Build dists
+      run: |
+        python -m pip install build
+        python -m build --sdist
+    - uses: actions/upload-artifact@v3
+      with:
+        path: dist/*.tar.gz
+
+  upload-pypi:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs: [build-wheels, build-sdist]
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: artifact
+        path: dist
+    - uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.pypi_password }}
