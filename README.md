@@ -1,8 +1,20 @@
 # atomicarray
 
-```python
-a = cls(0, 0)
-b = cls(1, 2)
+`atomicarray` offers classes to support thread-safe operation on multiple values at once.
 
-a += b  # can be called from multiple threads
+```python
+from atomicarray import ArrayInt32
+
+a = ArrayInt32(0, 0)
+b = ArrayInt32(1, 2)
+
+a += b  # can be called safely from multiple threads
+```
+
+## Run tests
+
+```cmd
+py -m pip install .[test]
+cd tests
+py -m unittest
 ```

@@ -44,7 +44,6 @@ class IntTest(unittest.TestCase):
         b = cls(1, 2)
 
         def target():
-            # nonlocal a
             for i in range(N):
                 a.__iadd__(b)
 
