@@ -1,14 +1,38 @@
 [build-system]
+build-backend = "setuptools.build_meta"
 requires = [
-  "Cython>=3",
+  "cython==3.0.10",
   "setuptools",
-  "wheel",
 ]
 
+[project]
+name = "atomicarray"
+version = "0.0.1"
+description = "Arrays with atomic operations"
+readme = "README.md"
+license = { text = "ISC License" }
+authors = [ { name = "Dobatymo", email = "Dobatymo@users.noreply.github.com" } ]
+requires-python = ">=3.8"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+optional-dependencies.test = [
+  "genutility[test]",
+]
+urls.Home = "https://github.com/Dobatymo/atomicarray"
+
 [tool.cibuildwheel]
-archs = ["auto64"]
+archs = [ "auto64" ]
 
 [tool.black]
+line-length = 120
+
+[tool.ruff]
 line-length = 120
 
 [tool.isort]
@@ -20,5 +44,9 @@ allow_redefinition = true
 warn_unused_configs = true
 warn_unused_ignores = true
 
+[tool.bandit]
+skips = [ "B101" ]
+
 [tool.cython-lint]
 max-line-length = 120
+ignore = [ "W191" ]

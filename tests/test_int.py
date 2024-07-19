@@ -44,7 +44,7 @@ class IntTest(unittest.TestCase):
         b = cls(1, 2)
 
         def target():
-            for i in range(N):
+            for _i in range(N):
                 a.__iadd__(b)
 
         threads = [threading.Thread(target=target) for i in range(num_workers)]
